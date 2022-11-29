@@ -10,16 +10,19 @@ class Feed(db.Model):
     )
     seen = db.Column(db.Boolean, default=False)
 
-    def __init__(self, sender_id, receiver_id):
+    def __init__(self, sender_id, receiver_id, distributor_id):
         self.sender_id = sender_id
         self.receiver_id = receiver_id
+        self.distributor_id = distributor_id
+
+    def set_seen(self):
+        self.seen = True
 
     def to_json(self):
         return {
             "id": self.id,
             "sender_id": self.sender_id,
             "receiver_id": self.receiver_id,
+            "distributor_id": self.distributor_id,
+            "seen": self.seen,
         }
-
-    def set_seen(self):
-        self.seen = True

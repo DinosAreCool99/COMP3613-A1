@@ -5,6 +5,9 @@ from datetime import datetime
 class Distributor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     num_profiles = db.Column(db.Integer, nullable=False)
+    feed = db.relationship(
+        "Feed", backref="distributor", lazy=True, cascade="all, delete-orphan"
+    )
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __init__(self, num_profiles):
@@ -20,9 +23,10 @@ class Distributor(db.Model):
     def get_timestamp(self):
         return self.timestamp
 
-    # TODO - distribution algorithm
-    def distribute(self):
-        pass
+    # def distribute(self):
+    #     for i in range(1, self.num_profiles + 1):
+    #         feed = Feed(self.id, i)
+    #         db.session.add(feed)
 
     def to_json(self):
         return {
