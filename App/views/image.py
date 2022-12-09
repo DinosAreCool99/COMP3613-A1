@@ -22,6 +22,7 @@ def get_image_page():
     return render_template('images.html', images=images)
 
 @image_views.route('/api/images', methods=['POST'])
+@jwt_required()
 def create_image_action():
     data = request.json
     user = get_user(data['userId'])
@@ -48,6 +49,7 @@ def get_images_by_id_action():
     return jsonify(image)
 
 @image_views.route('/api/images', methods=['DELETE'])
+@jwt_required()
 def delete_image_action():
     data = request.json
     if get_image(data['id']):

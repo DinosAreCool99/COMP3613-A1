@@ -19,6 +19,7 @@ rating_views = Blueprint('rating_views', __name__, template_folder='../templates
 
 
 @rating_views.route('/api/ratings', methods=['POST'])
+@jwt_required()
 def create_rating_action():
     data = request.json
     if get_user(data['creatorId']) and get_user(data['targetId']):
@@ -73,14 +74,6 @@ def update_rating_action():
     if rating:
         return jsonify({"message":"Rating updated"})
     return jsonify({"message":"Rating not found"})
-
-# @rating_views.route('/api/ratings', methods=['DELETE'])
-# def delete_rating_action():
-#     data = request.json
-#     if get_rating(data['id']):
-#         delete_rating(data['id'])
-#         return jsonify({"message":"Rating deleted"}) 
-#     return jsonify({"message":"Rating not found"}) 
 
 @rating_views.route('/api/ratings/calc', methods=['GET'])
 def get_calculated_rating_action():

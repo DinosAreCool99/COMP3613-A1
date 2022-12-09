@@ -26,6 +26,7 @@ def get_user_page():
 def static_user_page():
   return send_from_directory('static', 'static-user.html')
 
+
 @user_views.route('/api/users', methods=['POST'])
 def create_user_action():
     data = request.json
@@ -34,6 +35,26 @@ def create_user_action():
         return jsonify({"message":"Username Already Taken"}) 
     user = create_user(data['username'], data['password'])
     return jsonify({"message":"User Created"}) 
+
+@user_views.route('/signup', methods=["POST"])
+def signup_action():
+    data = request.get_json()
+    if not data:
+        return "Missing request body.", 400
+
+    username = data['username']
+    password = data['password']
+    if not username or not password:
+        return "Missing username or password parameter.", 400
+
+    user = get_user_by_username(data['username'])
+    if user:
+        return jsonify({"message":"Username Already Taken"}) 
+
+    new_user = create_user(username, password)
+    if not new_user:
+        return "Failed to create.", 400
+    return new_user.toJSON(), 201
 
 @user_views.route('/api/users', methods=['GET'])
 def get_all_users_action():
@@ -85,23 +106,3 @@ def get_level_action():
         level = get_level(user.id)
         return jsonify({"level":f"{level}"})
     return jsonify({"message":"User Not Found"})
-
-@user_views.route('/signup', methods=["POST"])
-def signup_action():
-    data = request.get_json()
-    if not data:
-        return "Missing request body.", 400
-
-    username = data['username']
-    password = data['password']
-    if not username or not password:
-        return "Missing username or password parameter.", 400
-
-    user = get_user_by_username(data['username'])
-    if user:
-        return jsonify({"message":"Username Already Taken"}) 
-
-    new_user = create_user(username, password)
-    if not new_user:
-        return "Failed to create.", 400
-    return new_user.toJSON(), 201
