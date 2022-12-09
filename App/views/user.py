@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request, send_from_directory
 from flask_jwt import jwt_required
 
-
 from App.controllers import (
     create_user, 
     get_all_users,
@@ -18,7 +17,6 @@ from App.controllers import (
 
 user_views = Blueprint('user_views', __name__, template_folder='../templates')
 
-
 @user_views.route('/users', methods=['GET'])
 def get_user_page():
     users = get_all_users()
@@ -28,6 +26,7 @@ def get_user_page():
 def static_user_page():
   return send_from_directory('static', 'static-user.html')
 
+
 @user_views.route('/api/users', methods=['POST'])
 def create_user_action():
     data = request.json
@@ -36,6 +35,26 @@ def create_user_action():
         return jsonify({"message":"Username Already Taken"}) 
     user = create_user(data['username'], data['password'])
     return jsonify({"message":"User Created"}) 
+
+@user_views.route('/signup', methods=["POST"])
+def signup_action():
+    data = request.get_json()
+    if not data:
+        return "Missing request body.", 400
+
+    username = data['username']
+    password = data['password']
+    if not username or not password:
+        return "Missing username or password parameter.", 400
+
+    user = get_user_by_username(data['username'])
+    if user:
+        return jsonify({"message":"Username Already Taken"}) 
+
+    new_user = create_user(username, password)
+    if not new_user:
+        return "Failed to create.", 400
+    return new_user.toJSON(), 201
 
 @user_views.route('/api/users', methods=['GET'])
 def get_all_users_action():
@@ -49,7 +68,6 @@ def get_user_action():
     if user:
         return user.toJSON() 
     return jsonify({"message":"User Not Found"})
-
 
 # @user_views.route('/api/users/byid', methods=['GET'])
 # def get_user_action():
@@ -79,18 +97,6 @@ def delete_user_action():
 @jwt_required()
 def identify_user_action():
     return jsonify({'message': f"username: {current_identity.username}, id : {current_identity.id}"})
-
-
-@user_views.route('/auth', methods=['POST'])
-def login_user_action():
-    data = request.get_json()
-    user = authenticate(data['username'], data['password'])
-    if user:
-        login_user(user, False)
-        session["username"] = user.username
-        session["user_id"] = user.id
-        return jsonify({"message": f"{user.username} logged in"}) 
-    return jsonify({"message":"Username and password do not match"}) 
 
 @user_views.route('/api/users/level', methods=['GET'])
 def get_level_action():

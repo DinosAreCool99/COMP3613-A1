@@ -12,7 +12,6 @@ from App.controllers import (
     get_ranking_by_actors,
     get_calculated_ranking,
     update_ranking,
-    #delete_ranking,
     get_user,
     get_image
 )
@@ -20,6 +19,7 @@ from App.controllers import (
 ranking_views = Blueprint('ranking_views', __name__, template_folder='../templates')
 
 @ranking_views.route('/api/rankings', methods=['POST'])
+@jwt_required()
 def create_ranking_action():
     data = request.json
     if get_user(data['creatorId']) and get_image(data['imageId']):
@@ -73,14 +73,6 @@ def update_ranking_action():
     if ranking:
         return jsonify({"message":"Ranking updated"})
     return jsonify({"message":"Ranking not found"})
-
-# @ranking_views.route('/api/rankings', methods=['DELETE'])
-# def delete_ranking_action():
-#     data = request.json
-#     if get_ranking(data['id']):
-#         delete_ranking(data['id'])
-#         return jsonify({"message":"Ranking deleted"}) 
-#     return jsonify({"message":"Ranking not found"}) 
 
 @ranking_views.route('/api/rankings/calc', methods=['GET'])
 def get_calculated_ranking_action():
