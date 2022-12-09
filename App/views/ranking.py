@@ -12,7 +12,6 @@ from App.controllers import (
     get_ranking_by_actors,
     get_calculated_ranking,
     update_ranking,
-    #delete_ranking,
     get_user,
     get_image
 )
