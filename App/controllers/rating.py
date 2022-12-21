@@ -70,9 +70,8 @@ def get_calculated_rating(targetId):
 
 def get_level(id):
     ratings = get_ratings_by_creator(id)
+    level = 0
     if ratings:
-        level = 0;
         for rating in ratings:
             level = level + 1
-        return level
-    return None
+    return level
