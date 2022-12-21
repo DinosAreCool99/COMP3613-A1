@@ -57,25 +57,15 @@ def signup_action():
     return new_user.toJSON(), 201
 
 @user_views.route('/api/users', methods=['GET'])
-def get_all_users_action():
-    users = get_all_users_json()
-    return jsonify(users)
-
-@user_views.route('/api/users/byid', methods=['GET'])
-def get_user_action():
-    data = request.json
-    user = get_user(data['id'])
+def get_users_action():
+    id = request.args.get('id')
+    if not id:
+        users = get_all_users_json()
+        return jsonify(users)
+    user = get_user(id)
     if user:
         return user.toJSON() 
     return jsonify({"message":"User Not Found"})
-
-# @user_views.route('/api/users/byid', methods=['GET'])
-# def get_user_action():
-#     id = request.args.get('id')
-#     user = get_user(id)
-#     if user:
-#         return user.toJSON() 
-#     return jsonify({"message":"User Not Found"})
 
 @user_views.route('/api/users', methods=['PUT'])
 def update_user_action():
@@ -87,9 +77,12 @@ def update_user_action():
 
 @user_views.route('/api/users', methods=['DELETE'])
 def delete_user_action():
-    data = request.json
-    if get_user(data['id']):
-        delete_user(data['id'])
+    id = request.args.get('id')
+    if not id:
+        return jsonify({"message":"Id Not Valid"}) 
+    user = get_user(id)
+    if user:
+        delete_user(id)
         return jsonify({"message":"User Deleted"}) 
     return jsonify({"message":"User Not Found"}) 
 
@@ -100,8 +93,11 @@ def identify_user_action():
 
 @user_views.route('/api/users/level', methods=['GET'])
 def get_level_action():
-    data = request.json
-    user = get_user(data['userId'])
+    id = request.args.get('id')
+    if not id:
+        # To change to return level for all users
+        return jsonify({"message":"Not yet implemented"})
+    user = get_user(id)
     if user:
         level = get_level(user.id)
         return jsonify({"level":f"{level}"})
