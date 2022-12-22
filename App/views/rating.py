@@ -35,37 +35,34 @@ def create_rating_action():
     return jsonify({"message":"User not found"}) 
 
 @rating_views.route('/api/ratings', methods=['GET'])
-def get_all_ratings_action():
-    ratings = get_all_ratings_json()
-    return jsonify(ratings)
-
-@rating_views.route('/api/ratings/byid', methods=['GET'])
-def get_rating_action():
-    data = request.json
-    rating = get_rating(data['id'])
-    if rating:
-        return rating.toJSON()
-    return jsonify({"message":"Rating not found"})
-
-@rating_views.route('/api/ratings/bycreator', methods=['GET'])
-def get_rating_by_creator_action():
-    data = request.json
-    if get_user(data['creatorId']):
-        rating = get_ratings_by_creator(data['creatorId'])
+def get_ratings_action():
+    args = request.args
+    if not args:
+        ratings = get_all_ratings_json()
+        return jsonify(ratings)
+    id = args.get('id')
+    creatorid = args.get('creatorid')
+    targetid = args.get('targetid')
+    if id:
+        rating = get_rating(id)
         if rating:
-            return jsonify(rating) 
-        return jsonify({"message":"No ratings by this user found"})
-    return jsonify({"message":"User not found"})
-
-@rating_views.route('/api/ratings/bytarget', methods=['GET'])
-def get_rating_by_target_action():
-    data = request.json
-    if get_user(data['targetId']):
-        rating = get_ratings_by_target(data['targetId'])
-        if rating:
-            return jsonify(rating) 
-        return jsonify({"message":"No ratings for this user found"})
-    return jsonify({"message":"User not found"})
+            return rating.toJSON()
+        return jsonify({"message":"Rating not found"})
+    if creatorid:
+        if get_user(creatorid):
+            ratings = get_ratings_by_creator(creatorid)
+            if ratings:
+                return jsonify(ratings) 
+            return jsonify({"message":"No ratings by this user found"})
+        return jsonify({"message":"User not found"})
+    if targetid:
+        if get_user(targetid):
+            rating = get_ratings_by_target(targetid)
+            if rating:
+                return jsonify(rating) 
+            return jsonify({"message":"No ratings for this user found"})
+        return jsonify({"message":"User not found"})
+    return jsonify({"message":"Invalid argument"}) 
 
 @rating_views.route('/api/ratings', methods=['PUT'])
 def update_rating_action():
@@ -77,9 +74,9 @@ def update_rating_action():
 
 @rating_views.route('/api/ratings/calc', methods=['GET'])
 def get_calculated_rating_action():
-    data = request.json
-    if get_user(data['targetId']):
-        rating = get_calculated_rating(data['targetId'])
+    targetId = request.args.get('targetid')
+    if get_user(targetId):
+        rating = get_calculated_rating(targetId)
         if rating:
             return jsonify({"calculated rating": rating}) 
         return jsonify({"message":"No ratings by this user found"})
