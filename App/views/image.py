@@ -31,7 +31,7 @@ def create_image_action():
     return jsonify({"message":"User does not exist"}) 
 
 @image_views.route('/api/images', methods=['GET'])
-def get_images_all_action():
+def get_images_action():
     args = request.args
     if not args:
         images = get_all_images_json()
