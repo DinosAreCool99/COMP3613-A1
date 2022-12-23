@@ -25,11 +25,11 @@ def get_image_page():
 def create_image_action():
     data = request.json
     if not data:
-        return "Missing request body.", 400
+        return jsonify({"message":"Missing request body."}), 400
 
     userId = data['userId']
     if not userId:
-        return "Missing username or password parameter.", 400
+        return jsonify({"message":"Missing userId parameter."}), 400
 
     user = get_user(userId)
     if user:
@@ -44,16 +44,21 @@ def get_images_action():
     args = request.args
     if not args:
         images = get_all_images_json()
-        return jsonify(images)
+        return jsonify(images), 200
+
     id = args.get('id')
     userId = args.get('userid')
     if id:
         image = get_image_json(id)
-        return jsonify(image)
+        if image:
+            return jsonify(image), 200
+        return jsonify({"message":"Image does not exist"}), 404 
     if userId:
-        images = get_images_by_userid_json(userId)
-        return jsonify(images)
-    return jsonify({"message":"Invalid argument"})
+        if get_user(userId):
+            images = get_images_by_userid_json(userId)
+            return jsonify(images), 200
+        return jsonify({"message":"User does not exist"}), 404 
+    return jsonify({"message":"Invalid argument"}), 400
 
 
 @image_views.route('/api/images', methods=['DELETE'])
@@ -61,8 +66,9 @@ def get_images_action():
 def delete_image_action():
     id = request.args.get('id')
     if not id:
-        return jsonify({"message":"Invalid arguments"})
+        return jsonify({"message":"Missing id parameter."}), 400
+
     if get_image(id):
         delete_image(id)
-        return jsonify({"message":"Image Deleted"}) 
-    return jsonify({"message":"Image Not Found"}) 
+        return jsonify({"message":"Image Deleted"}), 200
+    return jsonify({"message":"Image Not Found"}), 404
