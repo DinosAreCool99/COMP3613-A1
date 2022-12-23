@@ -26,15 +26,6 @@ def get_all_users_json():
     users = [user.toJSON() for user in users]
     return users
 
-def update_user(id, username):
-    user = get_user(id)
-    if user:
-        user.username = username
-        db.session.add(user)
-        db.session.commit()
-        return user
-    return None
-
 def delete_user(id):
     user = get_user(id)
     if user:

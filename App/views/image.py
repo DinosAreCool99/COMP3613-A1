@@ -19,16 +19,25 @@ def get_image_page():
     images = get_all_images()
     return render_template('images.html', images=images)
 
+
 @image_views.route('/api/images', methods=['POST'])
 @jwt_required()
 def create_image_action():
     data = request.json
-    user = get_user(data['userId'])
-    #Need to check if user has less than 5 images. Could be controller that takes userID and circumvents the check for the user
+    if not data:
+        return "Missing request body.", 400
+
+    userId = data['userId']
+    if not userId:
+        return "Missing username or password parameter.", 400
+
+    user = get_user(userId)
     if user:
-        image = create_image(data['userId'])
-        return jsonify({"message":"Image created"}) 
-    return jsonify({"message":"User does not exist"}) 
+        #Need to check if user has less than 5 images. Could be controller that takes userID and circumvents the check for the user
+        image = create_image(userId)
+        return jsonify({"message":"Image created"}), 201
+    return jsonify({"message":"User does not exist"}), 404 
+
 
 @image_views.route('/api/images', methods=['GET'])
 def get_images_action():
@@ -45,6 +54,7 @@ def get_images_action():
         images = get_images_by_userid_json(userId)
         return jsonify(images)
     return jsonify({"message":"Invalid argument"})
+
 
 @image_views.route('/api/images', methods=['DELETE'])
 @jwt_required()
