@@ -22,7 +22,7 @@ rating_views = Blueprint('rating_views', __name__, template_folder='../templates
 @jwt_required()
 def create_rating_action():
     data = request.json
-    if not data['creatorId'] and not data['targetId']:
+    if not data['creatorId'] or not data['targetId']:
         return jsonify({"message":"Missing creatorId or targetId parameter."}), 400
 
     if get_user(data['creatorId']) and get_user(data['targetId']):
@@ -72,6 +72,9 @@ def get_ratings_action():
 @rating_views.route('/api/ratings', methods=['PUT'])
 def update_rating_action():
     data = request.json
+    if not data['id'] or not data['score']:
+        return jsonify({"message":"Missing id or score parameter."}), 400
+    
     rating = update_rating(data['id'], data['score'])
     if rating:
         return jsonify({"message":"Rating updated"}), 200
@@ -82,7 +85,8 @@ def update_rating_action():
 def get_calculated_rating_action():
     targetId = request.args.get('targetid')
     if not targetID:
-        return jsonify({"message":"Invalid argument"}), 400
+        return jsonify({"message":"Missing targetid parameter."}), 400
+
     if get_user(targetId):
         rating = get_calculated_rating(targetId)
         if rating:

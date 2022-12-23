@@ -25,11 +25,11 @@ def get_image_page():
 def create_image_action():
     data = request.json
     if not data:
-        return "Missing request body.", 400
+        return jsonify({"message":"Missing request body."}), 400
 
     userId = data['userId']
     if not userId:
-        return "Missing userId parameter.", 400
+        return jsonify({"message":"Missing userId parameter."}), 400
 
     user = get_user(userId)
     if user:
@@ -66,7 +66,8 @@ def get_images_action():
 def delete_image_action():
     id = request.args.get('id')
     if not id:
-        return jsonify({"message":"Invalid arguments"}), 400
+        return jsonify({"message":"Missing id parameter."}), 400
+
     if get_image(id):
         delete_image(id)
         return jsonify({"message":"Image Deleted"}), 200
