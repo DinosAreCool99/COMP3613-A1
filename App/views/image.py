@@ -21,20 +21,30 @@ def get_image_page():
     images = get_all_images()
     return render_template('images.html', images=images)
 
+
 @image_views.route('/api/images', methods=['POST'])
 @jwt_required()
 def create_image_action():
     data = request.json
-    user = get_user(data['userId'])
+    if not data:
+        return "Missing request body.", 400
+
+    userId = data['userId']
+    if not userId:
+        return "Missing username or password parameter.", 400
+
+    user = get_user(userId)
     if user:
-        image = create_image(data['userId'])
-        return jsonify({"message":"Image created"}) 
-    return jsonify({"message":"User does not exist"}) 
+        image = create_image(userId)
+        return jsonify({"message":"Image created"}), 201
+    return jsonify({"message":"User does not exist"}), 404 
+
 
 @image_views.route('/api/images', methods=['GET'])
 def get_images_all_action():
     images = get_all_images_json()
     return jsonify(images)
+
 
 @image_views.route('/api/images/user', methods=['GET'])
 def get_images_by_user_action():
@@ -42,11 +52,13 @@ def get_images_by_user_action():
     images = get_images_by_userid_json(data['userId'])
     return jsonify(images)
 
+
 @image_views.route('/api/images/id', methods=['GET'])
 def get_images_by_id_action():
     data = request.json
     image = get_image_json(data['id'])
     return jsonify(image)
+
 
 @image_views.route('/api/images', methods=['DELETE'])
 @jwt_required()
