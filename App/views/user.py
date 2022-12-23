@@ -7,11 +7,11 @@ from App.controllers import (
     get_all_users_json,
     get_user,
     get_user_by_username,
-    update_user,
     delete_user,
     login_user,
     logout_user,
     get_level,
+    get_all_levels,
     authenticate
 )
 
@@ -94,8 +94,8 @@ def identify_user_action():
 def get_level_action():
     id = request.args.get('id')
     if not id:
-        # To change to return level for all users
-        return jsonify({"message":"Not yet implemented"}), 200
+        levels = get_all_levels()
+        return jsonify(levels), 200
     user = get_user(id)
     if user:
         level = get_level(user.id)
