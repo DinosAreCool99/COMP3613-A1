@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request, send_from_directory
 from flask_jwt import jwt_required
 
-
 from App.controllers import (
     create_image, 
     get_all_images,
@@ -14,7 +13,6 @@ from App.controllers import (
 )
 
 image_views = Blueprint('image_views', __name__, template_folder='../templates')
-
 
 @image_views.route('/images', methods=['GET'])
 def get_image_page():
@@ -35,36 +33,36 @@ def create_image_action():
 
     user = get_user(userId)
     if user:
+        #Need to check if user has less than 5 images. Could be controller that takes userID and circumvents the check for the user
         image = create_image(userId)
         return jsonify({"message":"Image created"}), 201
     return jsonify({"message":"User does not exist"}), 404 
 
 
 @image_views.route('/api/images', methods=['GET'])
-def get_images_all_action():
-    images = get_all_images_json()
-    return jsonify(images)
-
-
-@image_views.route('/api/images/user', methods=['GET'])
-def get_images_by_user_action():
-    data = request.json
-    images = get_images_by_userid_json(data['userId'])
-    return jsonify(images)
-
-
-@image_views.route('/api/images/id', methods=['GET'])
-def get_images_by_id_action():
-    data = request.json
-    image = get_image_json(data['id'])
-    return jsonify(image)
+def get_images_action():
+    args = request.args
+    if not args:
+        images = get_all_images_json()
+        return jsonify(images)
+    id = args.get('id')
+    userId = args.get('userid')
+    if id:
+        image = get_image_json(id)
+        return jsonify(image)
+    if userId:
+        images = get_images_by_userid_json(userId)
+        return jsonify(images)
+    return jsonify({"message":"Invalid argument"})
 
 
 @image_views.route('/api/images', methods=['DELETE'])
 @jwt_required()
 def delete_image_action():
-    data = request.json
-    if get_image(data['id']):
-        delete_image(data['id'])
+    id = request.args.get('id')
+    if not id:
+        return jsonify({"message":"Invalid arguments"})
+    if get_image(id):
+        delete_image(id)
         return jsonify({"message":"Image Deleted"}) 
     return jsonify({"message":"Image Not Found"}) 

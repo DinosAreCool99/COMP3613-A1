@@ -8,11 +8,8 @@ from App.controllers import (
     get_user,
     get_user_by_username,
     delete_user,
-    login_user,
-    logout_user,
-    get_level,
     get_all_levels,
-    authenticate
+    get_level
 )
 
 user_views = Blueprint('user_views', __name__, template_folder='../templates')
