@@ -34,7 +34,7 @@ def create_user_action():
     data = request.json
     user = get_user_by_username(data['username'])
     if user:
-        return jsonify({"message":"Username Already Taken"}) , 400
+        return jsonify({"message":"Username Already Taken"}) , 409
     user = create_user(data['username'], data['password'])
     return jsonify({"message":"User Created"}), 201
 
@@ -52,7 +52,7 @@ def signup_action():
 
     user = get_user_by_username(data['username'])
     if user:
-        return jsonify({"message":"Username Already Taken"}), 400
+        return jsonify({"message":"Username Already Taken"}), 409
 
     new_user = create_user(username, password)
     if not new_user:
@@ -69,23 +69,6 @@ def get_users_action():
     user = get_user(id)
     if user:
         return user.toJSON(), 200
-    return jsonify({"message":"User Not Found"}), 404
-
-
-@user_views.route('/api/users', methods=['PUT'])
-def update_user_action():
-    data = request.json
-    if not data:
-        return "Missing request body.", 400
-
-    username = data['username']
-    id = data['id']
-    if not username or not id:
-        return "Missing username or id parameter.", 400
-
-    user = update_user(id, username)
-    if user:
-        return jsonify({"message":"User Updated"}), 200
     return jsonify({"message":"User Not Found"}), 404
 
 
@@ -112,7 +95,7 @@ def get_level_action():
     id = request.args.get('id')
     if not id:
         # To change to return level for all users
-        return jsonify({"message":"Not yet implemented"}), 302
+        return jsonify({"message":"Not yet implemented"}), 200
     user = get_user(id)
     if user:
         level = get_level(user.id)
