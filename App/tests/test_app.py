@@ -12,7 +12,6 @@ from App.controllers import (
     get_user_by_username,
     get_all_users,
     get_all_users_json,
-    update_user,
     delete_user,
 
     create_image,
@@ -151,11 +150,6 @@ class UsersIntegrationTests(unittest.TestCase):
     def test_get_all_users_json(self):
         users_json = get_all_users_json()
         self.assertListEqual([{"id":1, "username":"bob", "images": [], "ratings": []}, {"id":2, "username":"rick", "images": [], "ratings": []}], users_json)
-
-    def test_update_user(self):
-        update_user(1, "ronnie")
-        user = get_user(1)
-        assert user.username == "ronnie"
 
     def test_delete_user(self):
         create_user("phil", "philpass")
