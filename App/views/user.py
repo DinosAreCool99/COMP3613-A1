@@ -21,11 +21,6 @@ def get_user_page():
     return render_template('users.html', users=users)
 
 
-@user_views.route('/static/users')
-def static_user_page():
-  return send_from_directory('static', 'static-user.html')
-
-
 # To be removed at another time
 @user_views.route('/api/users', methods=['POST'])
 def create_user_action():
