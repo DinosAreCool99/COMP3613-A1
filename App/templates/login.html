@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block page %}Signup{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+    <h4>Signup</h4>
+
+    <div class="container">
+        <form class="card col s12" id="signupForm" method="POST" action="/index">
+        
+            <div class="input-field col s12">
+                {{ form.username(size=20, class="validate") }}
+                {{ form.username.label }}
+            </div>
+
+            <div class="input-field col s12">
+                {{ form.password(size=20, class="validate") }}
+                {{ form.password.label }}
+            </div>
+
+            <div class="input-field col s12 m8 offset-m2">
+                {{form.submit}}
+            </div>
+
+        </form>
+    </div>
+
+{% endblock %}
